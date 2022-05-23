@@ -1,22 +1,40 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model Member {
-  serialNumber Int 
-  id           String @id
-  pw           String
-  name         String
-  petId        Int[]
-  sex          Int
-  age          Int
-  introduction String
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  SN       Int       @id @default(autoincrement())
+  id       String    @unique
+  name     String    @unique
+  password String
+  rooms    Room[]
+  Message  Message[]
+}
+
+model Room {
+  SN        Int       @id @default(autoincrement())
+  users     User[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  messages  Message[]
+}
+
+model Message {
+  SN        Int      @id @default(autoincrement())
+  payload   String
+  user      User     @relation(fields: [userSN], references: [SN])
+  room      Room     @relation(fields: [roomSN], references: [SN])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  read      Boolean  @default(false)
+  userSN    Int
+  roomSN    Int
 }
