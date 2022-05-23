@@ -9,7 +9,6 @@ export default gql `
     read: Boolean!
     createdAt: String!
     updatedAt: String!
-  
   }
   type Room{
     SN: Int!
