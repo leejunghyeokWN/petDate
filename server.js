@@ -13,6 +13,23 @@ import schema from "./schema";
 import { getUser } from "./users/users.utils";
 
 async function startServer() {
+    const app = express();
+    const httpServer = http.createServer(app);
+
+    const subscriptionServer = SubscriptionServer.create({
+        schema,
+        execute,
+        subscribe,
+        async onConnect(connectionParams, webSocket, context) {
+            const { token } = connectionParams;
+            if (!token) {
+                throw new Error("토큰이 존재하지 않습니다.");
+            }
+            const loggedInUser = await getUser(token);
+            return { loggedInUser };
+        },
+    }, { server: httpServer, path: "/graphql" });
+
     const apollo = new ApolloServer({
         schema,
         context: async({ req }) => {
@@ -21,6 +38,11 @@ async function startServer() {
                     loggedInUser: await getUser(req.headers.token),
                 };
             }
+        },
+        subscriptions: {
+            onConnect: (params) => {
+                console.log(params);
+            },
         },
         plugins: [{
             async serverWillStart() {
@@ -34,22 +56,10 @@ async function startServer() {
     });
 
     await apollo.start();
-    const app = express();
     app.use(logger("tiny"));
     app.use("/static", express.static("uploads"));
     app.use(graphqlUploadExpress());
     apollo.applyMiddleware({ app });
-
-    const httpServer = http.createServer(app);
-
-    const subscriptionServer = SubscriptionServer.create({
-        schema,
-        execute,
-        subscribe,
-    }, {
-        server: httpServer,
-        path: apollo.graphqlPath,
-    });
 
     const PORT = process.env.PORT;
     await new Promise((resolve) => httpServer.listen(PORT, resolve));
