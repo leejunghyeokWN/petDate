@@ -17,6 +17,7 @@ model User {
   password String
   rooms    Room[]
   Message  Message[]
+  Post     Post[]
 }
 
 model Room {
@@ -37,4 +38,13 @@ model Message {
   read      Boolean  @default(false)
   userSN    Int
   roomSN    Int
+}
+
+model Post {
+  SN        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userSN], references: [SN])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  content   String
+  userSN    Int
 }

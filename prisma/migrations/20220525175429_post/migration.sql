@@ -1,0 +1,13 @@
+-- CreateTable
+CREATE TABLE "Post" (
+    "SN" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "content" TEXT NOT NULL,
+    "userSN" INTEGER NOT NULL,
+
+    CONSTRAINT "Post_pkey" PRIMARY KEY ("SN")
+);
+
+-- AddForeignKey
+ALTER TABLE "Post" ADD CONSTRAINT "Post_userSN_fkey" FOREIGN KEY ("userSN") REFERENCES "User"("SN") ON DELETE RESTRICT ON UPDATE CASCADE;
