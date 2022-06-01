@@ -3,10 +3,12 @@ import { protectedResolver } from "./users.utils";
 
 export default {
   Query: {
-    me: protectedResolver((_, __, {loggedInUser}) =>
-       client.user.findUnique({where:{
-        SN:loggedInUser.SN,
-      }}) 
+    getMe: protectedResolver((_, __, {loggedInUser}) =>
+      client.user.findUnique({
+        where:{
+          SN:loggedInUser.SN,
+        }
+      }) 
     ),
     users: (_, {}) =>
       client.user.findMany(),

@@ -3,10 +3,12 @@ import { protectedResolver } from "../../users/users.utils";
 export default {
   Mutation: {
     uploadPost: protectedResolver(
-      async (_, { content }, { loggedInUser }) => {
+      async (_, { content, time, location }, { loggedInUser }) => {
         const newPost = await client.post.create({
           data: {
             content,
+            time,
+            location,
             user: {
               connect: {
                 SN: loggedInUser.SN,
@@ -14,7 +16,6 @@ export default {
             }
           }
         })
-        console.log(newPost);
         return {
           ok:true,
         };

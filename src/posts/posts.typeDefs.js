@@ -6,6 +6,8 @@ export default gql `
     user: User!
     isMine: Boolean!
     content: String!
+    time: String!
+    location: String!
     createdAt: String!
     updatedAt: String!
   }
